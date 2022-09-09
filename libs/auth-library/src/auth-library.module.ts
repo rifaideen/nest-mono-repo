@@ -12,6 +12,7 @@ import configuration from '@app/common/config/configuration';
 @Module({
   imports: [
     ConfigModule.forRoot({
+      isGlobal: true,
       envFilePath: ['.env.local', '.env'],
       load: [configuration],
     }),
