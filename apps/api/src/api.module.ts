@@ -1,5 +1,4 @@
-
-import { AuthModule } from '@app/common/auth/auth.module';
+import { AuthLibraryModule } from '@app/auth-library';
 import configuration from '@app/common/config/configuration';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -15,7 +14,7 @@ import { ApiService } from './api.service';
       envFilePath: ['.env.local', '.env'],
       load: [configuration, apiConfiguration],
     }),
-    AuthModule
+    AuthLibraryModule,
   ],
   controllers: [ApiController],
   providers: [ApiService],
