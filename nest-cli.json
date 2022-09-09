@@ -51,7 +51,13 @@
       "entryFile": "main",
       "sourceRoot": "apps/email/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/email/tsconfig.app.json"
+        "tsConfigPath": "apps/email/tsconfig.app.json",
+        "assets": [
+          {
+            "include": "**/*.hbs",
+            "watchAssets": true
+          }
+        ]
       }
     }
   }
