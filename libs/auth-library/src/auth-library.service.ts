@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { compare } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { UsersService } from './users/users.service';
+import { randomBytes } from 'crypto';
+import { User } from './users/user.schema';
 
 @Injectable()
 export class AuthLibraryService {
@@ -41,5 +43,55 @@ export class AuthLibraryService {
     return {
       access_token: this.jwtService.sign(payload),
     };
+  }
+
+  /**
+   * Create reset password token for the given user
+   * @param email 
+   * @returns 
+   */
+  async createResetPasswordToken(email): Promise<User | boolean> {
+    let user = await this.userService.findByEmail(email);
+
+    if (!user) {
+      return false;
+    }
+
+    user = await this.userService.findOneAndUpdate({ _id: user._id }, {
+      passwordResetToken: this.generateRandomToken(),
+      passwordTokenExpiry: new Date(Date.now() + 3600000)
+    });
+
+    return user;
+  }
+
+  /**
+   * Reset password for the given token, if the token is still valid
+   * @param token 
+   * @param password 
+   * @returns 
+   */
+  async resetPassword(token: string, password: string): Promise<User | undefined> {
+    const result = await this.userService.findOneAndUpdate({
+      passwordResetToken: token,
+      passwordTokenExpiry: {
+        $gte: new Date(Date.now())
+      }
+    }, {
+      passwordResetToken: null,
+      passwordTokenExpiry: null,
+      password: (await hash(password, 10)).toString(),
+    });
+
+    return result;
+  }
+
+  /**
+   * Generatest the random token for the given size
+   * @param size 
+   * @returns 
+   */
+  generateRandomToken(size = 32): string {
+    return randomBytes(size).toString('hex');
   }
 }
