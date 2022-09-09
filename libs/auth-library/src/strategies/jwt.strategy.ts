@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { omit } from 'lodash';
 import { UsersService } from '../users/users.service';
 
 @Injectable()
@@ -20,8 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: any) {
     const user = await this.userService.findByEmail(payload.email);
-    delete user.password;
 
-    return user;
+    return omit(user, ['__v', 'password', 'passwordResetToken', 'passwordTokenExpiry']);
   }
 }
