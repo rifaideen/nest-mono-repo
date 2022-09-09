@@ -1,8 +1,8 @@
 const { env } = process;
 
 export default () => ({
-  auth_port: parseInt(env.PORT) || 3000,
-  api_port: parseInt(env.API_PORT) || 3001,
+  auth_server_port: parseInt(env.AUTH_SERVER_PORT) || 3000,
+  api_server_port: parseInt(env.API_SERVER_PORT) || 3001,
   database: {
     connectionString: env.DB_CONNECTION_STRING,
   },

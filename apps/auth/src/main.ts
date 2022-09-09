@@ -5,7 +5,7 @@ import { AuthModule } from './auth.module';
 async function bootstrap() {
   const app = await NestFactory.create(AuthModule);
   const config = app.get(ConfigService);
-  const port = config.get<number>('auth_port');
+  const port = config.get<number>('auth_server_port');
   await app.listen(port);
   console.log(`🚀 Auth server ready at http://localhost:${port}`);
 }

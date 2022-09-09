@@ -93,7 +93,8 @@
       "<rootDir>/libs/"
     ],
     "moduleNameMapper": {
-      "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1"
+      "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1",
+      "^@app/auth-library(|/.*)$": "<rootDir>/libs/auth-library/src/$1"
     }
   }
 }
