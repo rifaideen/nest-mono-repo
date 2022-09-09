@@ -4,6 +4,7 @@ import { AuthUserType } from '@app/auth-library/auth-user.type';
 import { JwtAuthGuard } from '@app/auth-library/guards/jwt-auth.guard';
 import { LocalAuthGuard } from '@app/auth-library/guards/local-auth.guard';
 import { BadRequestException, Body, Controller, Get, HttpCode, Post, Request, UseGuards } from '@nestjs/common';
+import { SkipThrottle } from '@nestjs/throttler';
 import { ForgotPasswordDTO } from './dto/forgot-password.dto';
 import { ResetPasswordDTO } from './dto/reset-password.dto';
 
@@ -18,6 +19,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @SkipThrottle()
   @Get('profile')
   async profile(@AuthUser() user: AuthUserType): Promise<any> {
     return user;
