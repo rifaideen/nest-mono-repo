@@ -50,11 +50,11 @@ export class AuthLibraryService {
    * @param email 
    * @returns 
    */
-  async createResetPasswordToken(email): Promise<User | boolean> {
+  async createResetPasswordToken(email): Promise<User> {
     let user = await this.userService.findByEmail(email);
 
     if (!user) {
-      return false;
+      return;
     }
 
     user = await this.userService.findOneAndUpdate({ _id: user._id }, {

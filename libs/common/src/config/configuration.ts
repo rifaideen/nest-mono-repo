@@ -11,4 +11,8 @@ export default () => ({
     secret: env.JWT_SECRET,
     expirationTime: env.JWT_EXPIRATION_TIME || '7 days',
   },
+  rabbitmq: {
+    url: env.RMQ_URL,
+    emailQueue: env.RMQ_EMAIL_QUEUE
+  },
 });

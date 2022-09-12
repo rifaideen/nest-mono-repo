@@ -3,14 +3,15 @@ import { AuthUser } from '@app/auth-library/auth-user.decorator';
 import { AuthUserType } from '@app/auth-library/auth-user.type';
 import { JwtAuthGuard } from '@app/auth-library/guards/jwt-auth.guard';
 import { LocalAuthGuard } from '@app/auth-library/guards/local-auth.guard';
-import { BadRequestException, Body, Controller, Get, HttpCode, Post, Request, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpCode, Inject, Post, Request, UseGuards } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { SkipThrottle } from '@nestjs/throttler';
 import { ForgotPasswordDTO } from './dto/forgot-password.dto';
 import { ResetPasswordDTO } from './dto/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthLibraryService) {}
+  constructor(private authService: AuthLibraryService, @Inject('EMAIL_SERVICE') private emailService: ClientProxy) { }
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
@@ -34,7 +35,11 @@ export class AuthController {
       throw new BadRequestException('The email address you entered does not exist.');
     }
 
-    // @todo send reset password email
+    this.emailService.emit('forgot-password', {
+      username: `${user.firstName} ${user.lastName}`,
+      email: dto.email,
+      token: user.passwordResetToken
+    });
 
     return {
       status: 'success',

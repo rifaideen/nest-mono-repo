@@ -1,14 +1,23 @@
 import { ValidationPipe } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { EmailModule } from './email.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(EmailModule);
+  const RMQ_URL = process.env.RMQ_URL;
+  const RMQ_EMAIL_QUEUE = process.env.RMQ_EMAIL_QUEUE;
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(EmailModule, {
+    transport: Transport.RMQ,
+    options: {
+      urls: [RMQ_URL],
+      queue: RMQ_EMAIL_QUEUE,
+      queueOptions: {
+        durable: false
+      },
+    },
+  });
   app.useGlobalPipes(new ValidationPipe());
-  const config = app.get(ConfigService);
-  const port = config.get<number>('email_server_port');
-  await app.listen(port);
-  console.log(`🚀 Email server ready at http://localhost:${port}`);
+  await app.listen();
+  console.log(`🚀 Email microservice created successfully`);
 }
 bootstrap();
