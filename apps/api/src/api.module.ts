@@ -1,11 +1,13 @@
 import { AuthLibraryModule } from '@app/auth-library';
 import configuration from '@app/common/config/configuration';
+import { RabbitmqModule } from '@app/common/rabbitmq/rabbitmq.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import apiConfiguration from './config/configuration';
 import { ApiController } from './api.controller';
 import { ApiService } from './api.service';
 import { MongooseModule } from '@nestjs/mongoose';
+import { RabbitMqService } from './services/rabbitmq.service';
 
 @Module({
   imports: [
@@ -22,8 +24,9 @@ import { MongooseModule } from '@nestjs/mongoose';
       inject: [ConfigService],
     }),
     AuthLibraryModule,
+    RabbitmqModule,
   ],
   controllers: [ApiController],
-  providers: [ApiService],
+  providers: [ApiService, RabbitMqService],
 })
 export class ApiModule {}
