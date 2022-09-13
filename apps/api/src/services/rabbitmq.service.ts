@@ -21,7 +21,7 @@ export class RabbitMqService {
    * 
    * @param {Channel} channel - Rabbitmq channel
    */
-  private async setup(channel: Channel) {
+  private async setup(channel: Channel): Promise<void> {
     this.channel = channel;
     
     const logger = this.logger;
@@ -80,7 +80,7 @@ export class RabbitMqService {
     routingKey: string,
     message: any,
     options?: PublishOptions
-  ) {
+  ): Promise<boolean> {
     this.logger.log('publish_message', {
       exchange,
       routingKey,

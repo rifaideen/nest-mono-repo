@@ -8,6 +8,7 @@ import { ApiController } from './api.controller';
 import { ApiService } from './api.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { RabbitMqService } from './services/rabbitmq.service';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { RabbitMqService } from './services/rabbitmq.service';
     }),
     AuthLibraryModule,
     RabbitmqModule,
+    AuthModule,
   ],
   controllers: [ApiController],
   providers: [ApiService, RabbitMqService],
