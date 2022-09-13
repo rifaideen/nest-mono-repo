@@ -1,38 +1,35 @@
 import { AuthLibraryService } from '@app/auth-library';
-import { AuthUser } from '@app/auth-library/auth-user.decorator';
-import { AuthUserType } from '@app/auth-library/auth-user.type';
-import { JwtAuthGuard } from '@app/auth-library/guards/jwt-auth.guard';
-import { LocalAuthGuard } from '@app/auth-library/guards/local-auth.guard';
-import { BadRequestException, Body, Controller, Get, HttpCode, Inject, Post, Request, UseGuards } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
-import { SkipThrottle } from '@nestjs/throttler';
-import { ForgotPasswordDTO } from './dto/forgot-password.dto';
-import { ResetPasswordDTO } from './dto/reset-password.dto';
+import { ForgotPasswordDTO } from '@app/auth-library/dto/forgot-password.dto';
+import { ResetPasswordDTO } from '@app/auth-library/dto/reset-password.dto';
+import { Controller, Inject, UseFilters } from '@nestjs/common';
+import { ClientProxy, MessagePattern, Payload, RpcException } from '@nestjs/microservices';
+import { ExceptionFilter } from './exception-filter/rpc-exception.filter';
 
+@UseFilters(new ExceptionFilter)
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthLibraryService, @Inject('EMAIL_SERVICE') private emailService: ClientProxy) { }
+  
+  @MessagePattern('auth.login')
+  async login(
+    @Payload('username') username: string, 
+    @Payload('password') password: string
+  ): Promise<any> {
+    const user = await this.authService.validateUser(username, password);
 
-  @UseGuards(LocalAuthGuard)
-  @Post('login')
-  async login(@Request() req): Promise<{ access_token: string }> {
-    return this.authService.login(req.user);
+    if (user) {
+      return this.authService.login(user);
+    }
+
+    throw new RpcException('Invalid credentials.');
   }
 
-  @UseGuards(JwtAuthGuard)
-  @SkipThrottle()
-  @Get('profile')
-  async profile(@AuthUser() user: AuthUserType): Promise<any> {
-    return user;
-  }
-
-  @Post('forgot-password')
-  @HttpCode(200)
-  async forgotPassword(@Body() dto: ForgotPasswordDTO): Promise<any> {
+  @MessagePattern('auth.forgot-password')
+  async forgotPassword(@Payload() dto: ForgotPasswordDTO): Promise<any> {
     const user = await this.authService.createResetPasswordToken(dto.email);
 
     if (!user) {
-      throw new BadRequestException('The email address you entered does not exist.');
+      throw new RpcException('The email address you entered does not exist.');
     }
 
     this.emailService.emit('forgot-password', {
@@ -47,14 +44,21 @@ export class AuthController {
     }
   }
 
-  @Post('reset-password')
-  async resetPassword(@Body() dto: ResetPasswordDTO): Promise<any> {
+  @MessagePattern('auth.reset-password')
+  async resetPassword(@Payload() dto: ResetPasswordDTO): Promise<any> {
     if (dto.newPassword !== dto.confirmPassword) {
-      throw new BadRequestException(['The passwords do not match.']);
+      throw new RpcException(['The passwords do not match.']);
     }
 
     const user = await this.authService.resetPassword(dto.token, dto.newPassword);
 
-    return { user };
+    if (!user) {
+      throw new RpcException('The reset password token is invalid.');
+    }
+
+    return {
+      status: 'success',
+      message: 'Password reset successfully.'
+    }
   }
 }

@@ -24,16 +24,16 @@ import authConfiguration from './config/configuration';
       inject: [ConfigService],
     }),
     AuthLibraryModule,
-    ThrottlerModule.forRoot({
-      ttl: 60,
-      limit: 10,
-    }),
+    // ThrottlerModule.forRoot({
+    //   ttl: 60,
+    //   limit: 10,
+    // }),
   ],
   providers: [
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: ThrottlerGuard,
+    // },
     {
       provide: 'EMAIL_SERVICE',
       useFactory(configService: ConfigService) {
