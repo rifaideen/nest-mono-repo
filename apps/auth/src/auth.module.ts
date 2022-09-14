@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthLibraryModule } from '@app/auth-library';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
 import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -46,13 +44,13 @@ import authConfiguration from './config/configuration';
             urls: [url],
             queue,
             queueOptions: {
-              durable: false
+              durable: false,
             },
           },
         });
       },
       inject: [ConfigService],
-    }
+    },
   ],
   controllers: [AuthController],
   exports: [],

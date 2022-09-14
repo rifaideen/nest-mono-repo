@@ -1,4 +1,4 @@
-import { ObjectId } from "mongoose";
+import { ObjectId } from 'mongoose';
 
 export type AuthUserType = {
   _id: ObjectId;
@@ -8,4 +8,4 @@ export type AuthUserType = {
   lastName: string;
 
   email: string;
-}
+};

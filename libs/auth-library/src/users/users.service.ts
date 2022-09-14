@@ -32,7 +32,16 @@ export class UsersService {
     return this.model.updateOne(condition, update);
   }
 
-  async findOneAndUpdate(condition: Record<string, any>, update: any): Promise<User> {
+  async findOneAndUpdate(
+    condition: Record<string, any>,
+    update: any,
+  ): Promise<User> {
     return this.model.findOneAndUpdate(condition, update, { new: true });
+  }
+
+  async findOne(
+    condition: Record<string, any>,
+  ): Promise<UserDocument | undefined> {
+    return this.model.findOne(condition);
   }
 }

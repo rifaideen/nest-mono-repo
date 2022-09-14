@@ -13,6 +13,6 @@ export default () => ({
   },
   rabbitmq: {
     url: env.RMQ_URL,
-    emailQueue: env.RMQ_EMAIL_QUEUE
+    emailQueue: env.RMQ_EMAIL_QUEUE,
   },
 });

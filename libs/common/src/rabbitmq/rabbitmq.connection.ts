@@ -1,7 +1,7 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
+import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { connect } from 'amqp-connection-manager';
-import { Channel } from "amqplib";
+import { Channel } from 'amqplib';
 
 @Injectable()
 export class RabbitmqConnection {
@@ -10,15 +10,15 @@ export class RabbitmqConnection {
   private readonly logger = new Logger(RabbitmqConnection.name);
 
   constructor(private configService: ConfigService) {
-    this.connectionString = this.configService.get<string>("rabbitmq.url");
+    this.connectionString = this.configService.get<string>('rabbitmq.url');
   }
 
   /**
    * Establish RMQ connection and invoke the setupCallback
-   * 
+   *
    * @param setupCallback Callback function to setup the exchanges and queues
    */
-  establish(setupCallback:(channel: Channel) => void): void {
+  establish(setupCallback: (channel: Channel) => void): void {
     this.logger.log('RabbitMQ establising connection');
     const server = connect([this.connectionString]);
 
@@ -32,12 +32,12 @@ export class RabbitmqConnection {
       this.connected = true;
       server.createChannel({
         json: false,
-        setup: setupCallback
+        setup: setupCallback,
       });
     });
 
     server.on('disconnect', () => {
-      this.logger.debug("Server disconnected");
+      this.logger.debug('Server disconnected');
     });
 
     server.on('connectFailed', ({ err }) => {

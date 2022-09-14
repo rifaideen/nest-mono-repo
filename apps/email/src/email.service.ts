@@ -17,13 +17,13 @@ export class EmailService {
         from: message.from,
         subject: message.subject,
         template: message.template,
-        context: message.data || {}
+        context: message.data || {},
       });
 
       return true;
     } catch (error) {
       console.log('Send email error:', error);
-      throw error; 
+      throw error;
     }
   }
 }

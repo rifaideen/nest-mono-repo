@@ -8,7 +8,7 @@ export class EmailController {
 
   @EventPattern('forgot-password')
   async forgotPassword(@Payload() data: any) {
-    const url = 'http://localhost:3000/reset-password'
+    const url = 'http://localhost:3000/reset-password';
     const payload = {
       from: 'Rifaudeen <rifa_sender@yopmail.com>',
       to: 'rifa_receiver@yopmail.com',
@@ -16,9 +16,9 @@ export class EmailController {
       template: 'forgot-password',
       data: {
         name: data.username,
-        link: `${url}?token=${data.token}`
-      }
-    }
+        link: `${url}?token=${data.token}`,
+      },
+    };
     await this.emailService.sendEmail(payload);
   }
 }

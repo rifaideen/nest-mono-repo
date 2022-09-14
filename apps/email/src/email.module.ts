@@ -16,20 +16,20 @@ import { EmailService } from './email.service';
       load: [configuration, emailConfiguration],
     }),
     MailerModule.forRootAsync({
-        useFactory(configService: ConfigService) {
-          return {
-            transport: configService.get('email.transport'),
-            defaults: configService.get('email.defaults'),
-            template: {
-              dir: __dirname + '/templates',
-              adapter: new HandlebarsAdapter(),
-              options: {
-                strict: true,
-              }
+      useFactory(configService: ConfigService) {
+        return {
+          transport: configService.get('email.transport'),
+          defaults: configService.get('email.defaults'),
+          template: {
+            dir: __dirname + '/templates',
+            adapter: new HandlebarsAdapter(),
+            options: {
+              strict: true,
             },
-          }
-        },
-        inject: [ConfigService],
+          },
+        };
+      },
+      inject: [ConfigService],
     }),
   ],
   controllers: [EmailController],

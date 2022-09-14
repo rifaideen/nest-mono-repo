@@ -22,6 +22,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: any) {
     const user = await this.userService.findByEmail(payload.email);
 
-    return omit(user, ['__v', 'password', 'passwordResetToken', 'passwordTokenExpiry']);
+    return omit(user, [
+      '__v',
+      'password',
+      'passwordResetToken',
+      'passwordTokenExpiry',
+    ]);
   }
 }

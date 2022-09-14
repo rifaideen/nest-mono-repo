@@ -24,15 +24,20 @@ export class ApiController {
     @Body('amount') amount: number,
     @Body('currency') currency: string,
     @Body('account') account: string,
-    @Body('country') country: string
+    @Body('country') country: string,
   ) {
-
-    const transferred = await this.apiService.transfer(amount, currency, country);
+    const transferred = await this.apiService.transfer(
+      amount,
+      currency,
+      country,
+    );
     const status = transferred ? 'success' : 'failed';
 
     return {
       status,
-      message: `Dear ${user.firstName} ${user.lastName}, Transfer of amount ${amount} ${currency} to ${account}, ${country.toUpperCase()} is ${status}.`,
-    }
+      message: `Dear ${user.firstName} ${
+        user.lastName
+      }, Transfer of amount ${amount} ${currency} to ${account}, ${country.toUpperCase()} is ${status}.`,
+    };
   }
 }

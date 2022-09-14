@@ -13,6 +13,10 @@ export class ApiService {
    * @returns {Promise<any>}
    */
   transfer(amount: number, currency: string, country: string): Promise<any> {
-    return this.rmqService.publish('western-union', country, `${amount} ${currency}`);
+    return this.rmqService.publish(
+      'western-union',
+      country,
+      `${amount} ${currency}`,
+    );
   }
 }

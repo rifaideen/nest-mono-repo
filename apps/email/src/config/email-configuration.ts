@@ -5,6 +5,6 @@ export default () => ({
     transport: env.EMAIL_TRANSPORT,
     defaults: {
       from: env.EMAIL_FROM || 'no-reply@example.com',
-    }
-  }
+    },
+  },
 });

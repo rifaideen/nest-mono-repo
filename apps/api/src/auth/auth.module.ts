@@ -10,11 +10,11 @@ import { AuthController } from './auth.controller';
         transport: Transport.TCP,
         options: {
           host: process.env.AUTH_SERVER_HOST || '127.0.0.1',
-          port: parseInt(process.env.AUTH_SERVER_PORT),
-        } 
+          port: parseInt(process.env.AUTH_SERVER_TCP_PORT),
+        },
       },
     ]),
   ],
-  controllers: [AuthController]
+  controllers: [AuthController],
 })
 export class AuthModule {}

@@ -8,7 +8,7 @@ export type UserDocument = User & Document;
 })
 export class User {
   @Prop({
-    type: SchemaTypes.ObjectId
+    type: SchemaTypes.ObjectId,
   })
   _id: ObjectId;
 

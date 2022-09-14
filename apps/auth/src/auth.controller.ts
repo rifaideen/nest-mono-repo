@@ -1,19 +1,29 @@
 import { AuthLibraryService } from '@app/auth-library';
+import { AuthUserType } from '@app/auth-library/auth-user.type';
 import { ForgotPasswordDTO } from '@app/auth-library/dto/forgot-password.dto';
 import { ResetPasswordDTO } from '@app/auth-library/dto/reset-password.dto';
+import { UpdatePasswordDTO } from '@app/auth-library/dto/update-password.dto';
 import { Controller, Inject, UseFilters } from '@nestjs/common';
-import { ClientProxy, MessagePattern, Payload, RpcException } from '@nestjs/microservices';
+import {
+  ClientProxy,
+  MessagePattern,
+  Payload,
+  RpcException,
+} from '@nestjs/microservices';
 import { ExceptionFilter } from './exception-filter/rpc-exception.filter';
 
-@UseFilters(new ExceptionFilter)
+@UseFilters(new ExceptionFilter())
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthLibraryService, @Inject('EMAIL_SERVICE') private emailService: ClientProxy) { }
-  
+  constructor(
+    private authService: AuthLibraryService,
+    @Inject('EMAIL_SERVICE') private emailService: ClientProxy,
+  ) {}
+
   @MessagePattern('auth.login')
   async login(
-    @Payload('username') username: string, 
-    @Payload('password') password: string
+    @Payload('username') username: string,
+    @Payload('password') password: string,
   ): Promise<any> {
     const user = await this.authService.validateUser(username, password);
 
@@ -35,13 +45,13 @@ export class AuthController {
     this.emailService.emit('forgot-password', {
       username: `${user.firstName} ${user.lastName}`,
       email: dto.email,
-      token: user.passwordResetToken
+      token: user.passwordResetToken,
     });
 
     return {
       status: 'success',
-      message: 'Your reset password link has been sent to your email address.'
-    }
+      message: 'Your reset password link has been sent to your email address.',
+    };
   }
 
   @MessagePattern('auth.reset-password')
@@ -50,7 +60,10 @@ export class AuthController {
       throw new RpcException(['The passwords do not match.']);
     }
 
-    const user = await this.authService.resetPassword(dto.token, dto.newPassword);
+    const user = await this.authService.resetPassword(
+      dto.token,
+      dto.newPassword,
+    );
 
     if (!user) {
       throw new RpcException('The reset password token is invalid.');
@@ -58,7 +71,38 @@ export class AuthController {
 
     return {
       status: 'success',
-      message: 'Password reset successfully.'
+      message: 'Password reset successfully.',
+    };
+  }
+
+  @MessagePattern('auth.update-password')
+  async updatePassword(
+    @Payload('dto') dto: UpdatePasswordDTO,
+    @Payload('user') user: AuthUserType,
+  ): Promise<any> {
+    if (dto.newPassword !== dto.confirmPassword) {
+      throw new RpcException('The passwords do not match.');
     }
+
+    if (dto.newPassword == dto.currentPassword) {
+      throw new RpcException(
+        'The current password and new password cannot be the same.',
+      );
+    }
+
+    if (
+      await this.authService.updatePassword(
+        user._id,
+        dto.currentPassword,
+        dto.newPassword,
+      )
+    ) {
+      return {
+        status: 'success',
+        message: 'Password updated successfully.',
+      };
+    }
+
+    throw new RpcException('Invalid password');
   }
 }
